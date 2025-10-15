@@ -2,10 +2,10 @@ services:
   face-api:
     build: 
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.gpu
       args:
         TARGET: cpu
-    container_name: face-embedding-api
+    container_name: face-embedding
     #command: "tail -f /dev/null"  # Keep the container running
     ports:
       - "5000:5000"
@@ -24,7 +24,7 @@ services:
 
   qdrant:
     image: qdrant/qdrant:v1.11.0 #latest
-    container_name: qdrant
+    container_name: face-qdrant
     #command: "tail -f /dev/null"  # Keep the container running
     ports:
       - "6333:6333"

@@ -32,9 +32,10 @@ RUN if [ "$TARGET" = "gpu" ]; then \
 # Copy application code
 COPY src/app.py .
 COPY src/config.py .
+COPY src/gunicorn_config.py .
 
 # Create directories for model files and images
-RUN mkdir -p /five /app/f4r/images
+RUN mkdir -p /app/models /app/images
 
 # Expose port
 EXPOSE 5000
@@ -42,9 +43,6 @@ EXPOSE 5000
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:5000/health || exit 1
-
-# Copy gunicorn configuration
-COPY src/gunicorn_config.py .
 
 # Run the application with Gunicorn
 CMD ["gunicorn", "--config", "gunicorn_config.py", "app:app"]
