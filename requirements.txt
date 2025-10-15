@@ -1,0 +1,10 @@
+flask>=2.0.0
+gunicorn>=20.1.0
+opencv-python>=4.5.0
+mxnet==1.9.1 #on gpu
+mxnet-cu112==1.9.1  # on cuda 11.2
+# mxnet==1.7.0 #on windows for cpu
+numpy==1.23.5
+requests>=2.25.0
+werkzeug>=2.0.0
+Pillow>=8.0.0

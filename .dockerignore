@@ -1,0 +1,137 @@
+# Git files
+.git
+.gitignore
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Documentation and markdown files (except README)
+*.md
+!README.md
+docs/
+
+# Test files and directories
+test/
+tests/
+*_test.py
+test_*.py
+
+# Configuration files (these should be handled via environment variables)
+.env
+.env.local
+.env.*.local
+*.local
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Data files (should be mounted as volumes)
+data/
+*.json
+!requirements.txt
+!requirements.cpu.txt
+
+# Client and development files
+client_test.py
+*_client.py
+
+# Deployment scripts (not needed in container)
+deploy.sh
+deploy.ps1
+start.sh
+start.ps1
+test_gunicorn.sh
+*.ps1
+*.sh
+
+# Docker files (no need to include in build context)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+
+# Model files (should be mounted as volumes)
+models/
+*.params
+*.json
+*.model
+
+# Image files (should be mounted as volumes)
+images/
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+
+# Jupyter notebooks
+*.ipynb
+.ipynb_checkpoints/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Backup files
+*.bak
+*.backup
+
+# Lock files
+Pipfile.lock
+poetry.lock
