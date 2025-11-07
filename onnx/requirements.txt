@@ -1,2 +1,5 @@
 # onnx runtime pip requirements
+mxnet==1.9.1
 onnxruntime==1.19.2
+onnx==1.12.0
+numpy==1.23.5

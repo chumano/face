@@ -1,4 +1,13 @@
 services:
+  onnx:
+    image: python:3.10
+    container_name: onnx-face
+    command: "tail -f /dev/null"  # Keep the container running
+    working_dir: /app/onnx
+    volumes:
+      - ./models:/app/models:rw
+      - ./onnx:/app/onnx:rw
+
   app-cpu:
     build: 
       context: .

@@ -1,9 +1,11 @@
 import onnxruntime as ort
+
 import cv2
 import numpy as np
 
 model_file = '../models/face_encoder.onnx'
 image_file = '../images/thao.jpg'
+image_file = "thao.jpg"
 
 # Load the ONNX model
 # onnx_model = onnx.load(model_file)
@@ -39,10 +41,10 @@ def preprocess_image(image_path, target_size=(112, 112)):
     
     # Transpose to CHW format (channels, height, width)
     img = np.transpose(img, (2, 0, 1))  # HWC to CHW
-    
-    # Model expects batch size of 2, so duplicate the image
-    batch_data = np.stack([img, img], axis=0)  # Shape: [2, 3, 112, 112]
-    
+
+    # Model expects batch size of 1, so expand dims
+    batch_data = np.expand_dims(img, axis=0)  # Shape: [1, 3, 112, 112]
+
     return batch_data
 
 # Generate face embedding
@@ -54,8 +56,8 @@ def get_face_embedding(image_path):
     outputs = session.run(None, {input_name: input_data})
     
     # Extract embedding (usually the first output)
-    # Since we duplicated the image, take the first embedding from the batch
-    embedding = outputs[0][0]  # Take first item from batch of 2
+    # Since we have batch size 1, take the first embedding from the batch
+    embedding = outputs[0][0]  # Take first item from batch of 1
     
     # Flatten if needed and normalize
     embedding = embedding.flatten()
