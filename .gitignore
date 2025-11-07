@@ -1,5 +1,11 @@
 /data/
-/images/
 venv/
 __pycache__/
 /models/
+
+/images
+!/images/face1.jpg
+!/images/face2.jpg
+!/images/face3.jpg
+!/images/face4.jpg
+!/images/thao.jpg
