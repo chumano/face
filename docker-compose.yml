@@ -1,21 +1,56 @@
 services:
-  face-api:
+  app-cpu:
     build: 
       context: .
       dockerfile: Dockerfile.gpu
       args:
-        TARGET: cpu
+        TARGET: cpu #cpu
+    container_name: face-embedding-cpu
+    command: "tail -f /dev/null"  # Keep the container running
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./models:/app/models:ro  # Mount model files
+      - ./images:/app/images:ro  # Mount image files
+      - ./data:/app/data:ro  # Mount data files
+      - ./src:/app/src:ro  # Mount source code
+    environment:
+      - FLASK_ENV=production
+      - GUNICORN_WORKERS=4
+    depends_on:
+      - qdrant
+    restart: unless-stopped
+    networks:
+      - face-network
+
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile.gpu
+      args:
+        TARGET: gpu #cpu
+    runtime: nvidia
+    #image: nvidia/cuda:12.2.2-devel-ubuntu22.04
     container_name: face-embedding
-    #command: "tail -f /dev/null"  # Keep the container running
+    command: "tail -f /dev/null"  # Keep the container running
     ports:
       - "5000:5000"
     volumes:
       - ./models:/app/models:ro  # Mount model files
       - ./images:/app/images:ro  # Mount image files
       - ./data:/app/data:ro  # Mount data files
+      - ./src:/app/src:ro  # Mount source code
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw  # For GUI applications
     environment:
       - FLASK_ENV=production
       - GUNICORN_WORKERS=4
+      - USE_GPU=True
+      - GPU_ID=0
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility,video
+      - DISPLAY=:0
+      - MXNET_CUDNN_AUTOTUNE_DEFAULT=0
+
     depends_on:
       - qdrant
     restart: unless-stopped

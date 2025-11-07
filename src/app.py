@@ -67,12 +67,13 @@ class MyEncoder:
 class FaceEmbeddingService:
     def __init__(self, config):
         # Initialize model
-        symbol_file = config.get('MODEL_SYMBOL_PATH', './models/face_encoder_symbol.json')
-        params_file = config.get('MODEL_PARAMS_PATH', './models/face_encoder.params')
+        symbol_file = config.get('MODEL_SYMBOL_PATH')
+        params_file = config.get('MODEL_PARAMS_PATH')
 
         # Determine context (GPU or CPU)
         use_gpu = config.get('USE_GPU', True)
         gpu_id = config.get('GPU_ID', 0)
+        print("Using GPU:", use_gpu, "GPU ID:", gpu_id)
         context = mx.gpu(gpu_id) if use_gpu else mx.cpu()
         
         # load model
@@ -333,16 +334,14 @@ def search_similar():
     """
     embedding_param = False
     # Check for embedding param in form or JSON
-    if request.is_json:
-        data = request.get_json()
-        embedding_param = bool(data.get('embedding', False))
-    elif 'embedding' in request.form:
-        embedding_param = request.form.get('embedding', 'false').lower() == 'true'
+    # if request.is_json:
+    #     data = request.get_json()
+    #     embedding_param = bool(data.get('embedding', False))
+    # elif 'embedding' in request.form:
+    #     embedding_param = request.form.get('embedding', 'false').lower() == 'true'
+    print("Embedding param check disabled for /search endpoint")
     result = handle_embed_and_search(request)
-
-    if isinstance(result[4], dict):
-        # error response
-        return result[4], result[5]
+  
     embedding, img, source_type, source_info, search_results, top = result
     response = {
         "success": True,
@@ -354,7 +353,9 @@ def search_similar():
     if embedding_param:
         response["embedding"] = embedding.tolist()
         response["embedding_shape"] = embedding.shape
-    return jsonify(response)
+
+    print("Response:", response)
+    return jsonify(response) , 200
     
 if __name__ == '__main__':
     # For development only - use gunicorn for production

@@ -9,8 +9,8 @@ class Config:
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB
     
     # Model Configuration
-    MODEL_SYMBOL_PATH = os.environ.get('MODEL_SYMBOL_PATH', './models/face_encoder_symbol.json')
-    MODEL_PARAMS_PATH = os.environ.get('MODEL_PARAMS_PATH', './models/face_encoder.params')
+    MODEL_SYMBOL_PATH = os.environ.get('MODEL_SYMBOL_PATH', '/app/models/face_encoder_symbol.json')
+    MODEL_PARAMS_PATH = os.environ.get('MODEL_PARAMS_PATH', '/app/models/face_encoder.params')
 
     # Qdrant Configuration
     QDRANT_URL = os.environ.get('QDRANT_URL', 'http://qdrant:6333/collections/f4r/points/search')

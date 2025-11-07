@@ -1,0 +1,2 @@
+# onnx runtime pip requirements
+onnxruntime==1.19.2

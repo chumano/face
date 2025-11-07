@@ -84,6 +84,10 @@ Search for similar faces in the vector database.
 
 #### File Upload with Top Parameter
 ```bash
+# face1: customer_00019 Ha Le
+# face2: customer_00022 Linh Huynh
+# face3: customer_00032 Thien Pham
+# face4: customer_00023 Thao Nguyen
 curl -X POST http://localhost:5000/search \
   -F "image=@./images/face1.jpg" \
   -F "top=3"

@@ -2,17 +2,32 @@
 ARG TARGET=cpu
 
 # Use conditional FROM based on TARGET
-FROM nvidia/cuda:11.2-cudnn8-runtime-ubuntu20.04 AS gpu
-FROM python:3.8-slim AS cpu
+#FROM nvidia/cuda:12.2.2-devel-ubuntu22.04 AS gpu
+FROM nvidia/cuda:11.6.1-cudnn8-runtime-ubuntu20.04 AS gpu
 
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install Python and pip in the GPU stage
+RUN apt-get update && \
+    apt-get install -y python3.8 python3-pip && \
+    ln -sf /usr/bin/python3.8 /usr/bin/python3 && \
+    ln -sf /usr/bin/pip3 /usr/bin/pip
+
+WORKDIR /app
+# Copy requirements and install Python dependencies
+COPY requirements.txt requirements.txt
+
+# ===========================================================
+FROM python:3.8-slim AS cpu
+WORKDIR /app
+# Copy requirements and install Python dependencies
+COPY requirements.cpu.txt requirements.txt
+# ===========================================================
 # Select the correct stage
 FROM ${TARGET}
 
 # Install system dependencies
 RUN apt-get update && \
-    if [ "$TARGET" = "gpu" ]; then \
-        apt-get install -y python3.8 python3-pip; \
-    fi && \
     apt-get install -y \
         libglib2.0-0 \
         libsm6 \
@@ -24,13 +39,17 @@ RUN apt-get update && \
         libavformat-dev \
         libswscale-dev \
         libquadmath0 \
+        libgl1-mesa-glx \
     && rm -rf /var/lib/apt/lists/*
+
+# Install utils
+RUN apt-get update && apt-get install -y curl jq
 
 WORKDIR /app
 
-# Copy requirements and install Python dependencies
-COPY requirements.txt requirements.txt
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN python3 -m pip install --no-cache-dir -r requirements.txt
+
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 
 # Copy application code
 COPY src/app.py .
