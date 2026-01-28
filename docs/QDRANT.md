@@ -1,5 +1,17 @@
 
 # QDrant
+
+## Copy data from server
+```bash
+192.168.1.202
+
+cce/bkhcmc@321456
+/mnt/hdd_2TB/data/f4r/qdrant
+
+scp -r cce@192.168.1.202:/mnt/hdd_2TB/data/f4r/qdrant/** ./data/qdrant_storage/
+
+```
+
 ## List all collections in QDrant to verify it's running correctly:
 ```bash
 curl http://qdrant:6333/collections
@@ -322,3 +334,48 @@ _HEADERS = {"content-type": "application/json"}
 results = requests.post(f'http://0.0.0.0:6333/collections/face4retail/points/scroll', headers=_HEADERS, json=json_data)
 print(results.json())
 ```
+
+## Backup/restore qdrant database
+https://qdrant.tech/documentation/database-tutorials/create-snapshot/
+
+```sh
+# Create snapshot
+curl -X POST http://qdrant:6333/collections/f4r/snapshots
+# snapshot created at /qdrant/snapshots/f4r/f4r-6033543052755006-2026-01-28-05-01-09.snapshot
+
+# List snapshots
+curl -X GET http://qdrant:6333/collections/f4r/snapshots
+
+# Download snapshot from qdrant container to host
+curl http://qdrant:6333/collections/f4r/snapshots/f4r-6033543052755006-2026-01-28-05-01-09.snapshot \
+    -o f4r.snapshot
+
+
+####################################################
+# Restore snapshot
+curl -X PUT http://qdrant:6333/collections/test \
+  -H "Content-Type: application/json" \
+  -d '{
+    "vectors": {
+      "size": 4,
+      "distance": "Cosine"
+    }
+  }'
+curl -X POST 'http://qdrant:6333/collections/test/snapshots/upload?priority=snapshot' \
+    -H 'Content-Type:multipart/form-data' \
+    -F 'snapshot=@f4r.snapshot'
+
+# Verify restore
+curl -X POST http://qdrant:6333/collections/test/points/scroll \
+  -H "Content-Type: application/json" \
+  -d '{
+    "limit": 10,
+    "with_payload": false,
+    "with_vector": false
+  }'
+
+# Remove collection after test
+curl -X DELETE http://qdrant:6333/collections/test
+
+```
+
