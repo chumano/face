@@ -1,9 +1,6 @@
 from flask import Flask, request, jsonify
 import cv2
-import mxnet as mx
 import numpy as np
-from mxnet import nd
-from mxnet.io import DataBatch
 import requests
 import json
 import os
@@ -16,6 +13,10 @@ from werkzeug.utils import secure_filename
 
 class MyEncoder:
     def __init__(self, mod, batch_size=2, context=None):
+        # Lazy import mxnet
+        global mx, nd
+        import mxnet as mx
+        from mxnet import nd
         self.mod = mod # is mx.mod.Module
         self.batch_size = batch_size
         self.ctx = context or mx.gpu(0)
@@ -34,6 +35,9 @@ class MyEncoder:
             batch.append(preprocessed)
         return np.array(batch)
     def compute_embedding_images(self, list_aligned_face_images, flip=True):
+        # Lazy import nd
+        global nd
+        from mxnet import nd
         embeddings = []
         # Process in batches
         for i in range(0, len(list_aligned_face_images), self.batch_size):
@@ -66,6 +70,11 @@ class MyEncoder:
 
 class FaceEmbeddingService:
     def __init__(self, config):
+        # Lazy import mxnet
+        global mx, nd
+        import mxnet as mx
+        from mxnet import nd
+
         # Initialize model
         symbol_file = config.get('MODEL_SYMBOL_PATH')
         params_file = config.get('MODEL_PARAMS_PATH')
@@ -82,6 +91,9 @@ class FaceEmbeddingService:
         model.bind(for_training=False, data_shapes=[('data', (1, 3,112, 112))],
                           label_shapes=None, force_rebind=True)
         model.load_params(params_file)
+
+        # logging with process id
+        print(f"Process {os.getpid()}: Model loaded successfully.")
         
         batch_size = config.get('BATCH_SIZE', 1)
         self.encoder = MyEncoder(model, batch_size=batch_size, context=context)
@@ -189,8 +201,11 @@ logging.basicConfig(
 app.logger.setLevel(log_level)
 app.logger.info(f'Face embedding API startup in {config_name} mode')
 
-# Initialize face embedding service
-face_service = FaceEmbeddingService(app.config)
+def get_face_service():
+    """Lazily create and cache the FaceEmbeddingService instance."""
+    if not hasattr(get_face_service, "_instance"):
+        get_face_service._instance = FaceEmbeddingService(app.config)
+    return get_face_service._instance
 
 # Allowed file extensions
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff'}
@@ -213,6 +228,7 @@ def embed_image():
     - FTP URL (JSON with 'ftp_url' field and optional 'username', 'password')
     """
     try:
+        face_service = get_face_service()
         # Check if it's a file upload
         if 'image' in request.files:
             file = request.files['image']
@@ -249,6 +265,7 @@ def embed_image():
             return jsonify({"error": "No image data provided. Use file upload or JSON with image_path/ftp_url"}), 400
         
         # Compute embedding
+        app.logger.info(f"Computing embedding for source type: {source_type}")  
         embedding = face_service.compute_embedding(img)
         
         return jsonify({
@@ -273,6 +290,7 @@ def handle_embed_and_search(request):
     """
     top = 5  # default value
     try:
+        face_service = get_face_service()
         # Check if it's a file upload
         if 'image' in request.files:
             file = request.files['image']

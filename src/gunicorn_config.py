@@ -1,14 +1,19 @@
 # Gunicorn configuration file
 import multiprocessing
 
+# CUDA: Check failed: e == cudaSuccess || e == cudaErrorCudartUnloading: initialization error"
+# https://github.com/apache/mxnet/issues/17826
+
+
 # Server socket
 bind = "0.0.0.0:5000"
 backlog = 2048
 
 # Worker processes
 import os
-workers = int(os.getenv('GUNICORN_WORKERS', multiprocessing.cpu_count() * 2 + 1))
+workers = int(os.getenv('GUNICORN_WORKERS', 2))
 worker_class = "sync"
+
 worker_connections = 1000
 timeout = 30
 keepalive = 2
@@ -43,3 +48,19 @@ tmp_upload_dir = None
 # This should point to your Flask app instance
 # Format: module_name:variable_name
 wsgi_module = "app:app"
+
+# Worker warmup hook
+def post_worker_init(worker):
+    """
+    Called just after a worker has been initialized.
+    Use this to warm up the face service (load model into memory/GPU).
+    """
+    from app import get_face_service
+    worker.log.info(f"Worker {worker.pid}: Warming up face service...")
+    try:
+        face_service = get_face_service()
+        worker.log.info(f"Worker {worker.pid}: Face service initialized successfully")
+        
+       
+    except Exception as e:
+        worker.log.error(f"Worker {worker.pid}: Failed to warm up face service: {e}")
