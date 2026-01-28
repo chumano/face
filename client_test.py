@@ -38,7 +38,7 @@ def test_embed_file_path():
     print("Testing file path embedding...")
     
     data = {
-        "image_path": "/app/f4r/images/thao.jpg"
+        "image_path": "/app/images/thao.jpg"
     }
     
     response = requests.post(
@@ -101,7 +101,7 @@ def test_search_file_path():
     print("Testing file path search...")
     
     data = {
-        "image_path": "/app/f4r/images/thao_2.jpg",
+        "image_path": "/app/images/thao_2.jpg",
         "top": 5
     }
     
@@ -119,15 +119,21 @@ def test_search_file_path():
 if __name__ == "__main__":
     print("Face Embedding API Client Test")
     print("=" * 40)
+    # read BASE_URL from args if provided
+    # python client_test.py http://100.64.0.4:5000
+    import sys
+    if len(sys.argv) > 1:
+        BASE_URL = sys.argv[1]
+        print(f"Using BASE_URL: {BASE_URL}")
     
     # Test all endpoints
     test_health()
-    test_embed_file_path()
-    test_search_file_path()
+    # test_embed_file_path()
+    # test_search_file_path()
     
     # Uncomment these if you have local images to test
-    # test_embed_file_upload()
-    # test_search_file_upload()
+    test_embed_file_upload()
+    test_search_file_upload()
     
     # Uncomment this if you have FTP access to test
     # test_embed_ftp()
