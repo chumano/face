@@ -169,7 +169,7 @@ curl -X POST http://qdrant:6333/collections/f4r/points/scroll \
 curl -X POST http://qdrant:6333/collections/f4r/points/scroll \
   -H "Content-Type: application/json" \
   -d '{
-    "limit": 100,
+    "limit": 10,
     "with_payload": false,
     "with_vector": false
   }'
