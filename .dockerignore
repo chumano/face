@@ -95,6 +95,7 @@ test_gunicorn.sh
 *.sh
 
 # Docker files (no need to include in build context)
+Dockerfile
 Dockerfile*
 docker-compose*.yml
 .dockerignore

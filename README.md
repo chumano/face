@@ -10,6 +10,11 @@ A Flask-based REST API for face embedding extraction and similarity search using
 - **Combined Operations**: Single endpoint for both embedding extraction and search
 - **Error Handling**: Comprehensive error handling with meaningful messages
 
+## DEV
+```bash
+PYTHONPATH=src gunicorn --config ./src/gunicorn_config.py app:app
+```
+
 ## API Endpoints
 
 ### 1. Health Check
@@ -17,6 +22,9 @@ A Flask-based REST API for face embedding extraction and similarity search using
 GET /health
 ```
 Returns the API health status.
+```bash
+curl  http://localhost:5000/health
+```
 
 **Response:**
 ```json
