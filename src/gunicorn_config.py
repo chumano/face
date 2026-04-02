@@ -1,19 +1,17 @@
 # Gunicorn configuration file
+import os
 import multiprocessing
 
 # CUDA: Check failed: e == cudaSuccess || e == cudaErrorCudartUnloading: initialization error"
 # https://github.com/apache/mxnet/issues/17826
 
-
 # Server socket
-bind = "0.0.0.0:5000"
+bind = f"0.0.0.0:{os.environ.get('PORT', '5000')}"
 backlog = 2048
 
 # Worker processes
-import os
-workers = int(os.getenv('GUNICORN_WORKERS', 2))
+workers = int(os.environ.get('GUNICORN_WORKERS', 2))
 worker_class = "sync"
-
 worker_connections = 1000
 timeout = 30
 keepalive = 2
