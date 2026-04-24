@@ -341,15 +341,16 @@ https://qdrant.tech/documentation/database-tutorials/create-snapshot/
 ```sh
 # Create snapshot
 curl -X POST http://qdrant:6333/collections/f4r/snapshots
-# snapshot created at /qdrant/snapshots/f4r/f4r-6033543052755006-2026-01-28-05-01-09.snapshot
+# snapshot created at /qdrant/snapshots/f4r/ 
+# wait long time until snapshot is created, then check snapshot info
+# {"result":{"name":"f4r-881217445187547-2026-04-08-15-25-30.snapshot","creation_time":"2026-04-08T16:07:48","size":325848576,"checksum":"5d74035c2ae342db6846c91e6dda6ef04972fba595cac18dfa6ca9c0417513f0"},"status":"ok","time":2544.595948515}
 
 # List snapshots
 curl -X GET http://qdrant:6333/collections/f4r/snapshots
 
 # Download snapshot from qdrant container to host
-curl http://qdrant:6333/collections/f4r/snapshots/f4r-6033543052755006-2026-01-28-05-01-09.snapshot \
+curl http://qdrant:6333/collections/f4r/snapshots/f4r-881217445187547-2026-04-08-15-25-30.snapshot \
     -o f4r.snapshot
-
 
 ####################################################
 # Restore snapshot
